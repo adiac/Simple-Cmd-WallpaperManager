@@ -9,6 +9,8 @@ namespace WallpaperManager
 {
     static class WallpaperManager
     {
+        public const string EditedFilesRegexString = @"(?:(?:_cut)|(?:_new))+\.(?:(?:png)|(?:jpg))$";
+
         #region Lists
 
         public static List<WallpaperType> Types { get; }
@@ -17,11 +19,10 @@ namespace WallpaperManager
         public static List<string> AllowedFileExtensions { get; }
         public static List<string> PossibleFileSuffix { get; }
 
-
         #endregion
 
         #region Directories
-
+        
         public static DirectoryInfo WallpaperDirectory { get; } = new DirectoryInfo("F:/Bilder/Wallpapers/Desktop");
         public static DirectoryInfo OriginalWallpaperDirectory { get; } = new DirectoryInfo("F:/Bilder/Wallpapers/Original");
         //Be careful! This next directory gets cleared without any warning!
@@ -32,8 +33,6 @@ namespace WallpaperManager
 
         #endregion
 
-        public const string EditedFilesRegexString = @"(?:(?:_cut)|(?:_new))+\.(?:(?:png)|(?:jpg))$";
-
         #region C'Tor
 
         static WallpaperManager()
@@ -41,13 +40,21 @@ namespace WallpaperManager
             Franchises = new List<WallpaperFranchise>();
             Types = new List<WallpaperType>();
             Wallpapers = new List<Wallpaper>();
-            AllowedFileExtensions = new List<string>();
-            AllowedFileExtensions.Add(".png");
-            AllowedFileExtensions.Add(".jpg");
-            AllowedFileExtensions.Add(".jpeg");
 
-            PossibleFileSuffix.Add("_new");
-            PossibleFileSuffix.Add("_cut");
+            //Not used yet.
+            AllowedFileExtensions = new List<string>
+            {
+                ".png",
+                ".jpg",
+                ".jpeg"
+            };
+
+            //Not used yet.
+            PossibleFileSuffix = new List<string>
+            {
+                "_new",
+                "_cut"
+            };
 
             if (!WallpaperDirectory.Exists)
                 throw new DirectoryNotFoundException();
@@ -70,7 +77,7 @@ namespace WallpaperManager
         internal static List<FileInfo> SortOutOrignals()
         {
             var movedFiles = new List<FileInfo>();
-            //Go through all Orignal Files and see if they are not listed in the other folder. (O(n))
+            //Go through all original files and see if they are not listed in the other folder. (O(n))
 
             var allOriginalFiles = OriginalWallpaperDirectory.GetFiles("*", SearchOption.AllDirectories);
             foreach (var currentFile in allOriginalFiles)
@@ -79,11 +86,6 @@ namespace WallpaperManager
                 {
                     if (currentFile.Name.Contains("#o"))
                     {
-                        //if (currentFile.Name == "Paladins#o1.png")
-                        //{
-                        //    Console.WriteLine("Debug");
-                        //}
-
                         //Check if there is a corresponding wallpaper file
                         var correspondingFileName = Path.GetFileNameWithoutExtension(currentFile.FullName).Replace("#o", "#");
                         var files = new[]
@@ -96,7 +98,7 @@ namespace WallpaperManager
                         if (foundFile is null)
                         {
                             //Move file, it does not belong here
-                            //currentFile.MoveTo(Path.Combine(TrashDirectory.FullName, currentFile.Name));
+                            currentFile.MoveTo(Path.Combine(TrashDirectory.FullName, currentFile.Name));
                             movedFiles.Add(currentFile);
                         }
                     }
@@ -333,7 +335,6 @@ namespace WallpaperManager
                     }
                 }
             }
-
             return newWallpapers;
         }
 

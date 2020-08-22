@@ -12,9 +12,9 @@ namespace WallpaperManager
     {
         #region Fields and Properties
 
-        public FileInfo File { get; private set; }
-        public FileInfo? OriginalFile { get; private set; }
-        public WallpaperFranchise Franchise { get; private set; }
+        public FileInfo File { get; }
+        public FileInfo? OriginalFile { get; }
+        public WallpaperFranchise Franchise { get; }
         public int Index { get; private set; }
 
         public static int TotalCountWithoutOriginal
@@ -44,8 +44,6 @@ namespace WallpaperManager
 
             if (!file.Exists)
                 throw new FileNotFoundException("File was not found.");
-            //if (!originalDirectory.Exists)
-            //    throw new DirectoryNotFoundException("Directory was not found.");
             if (!WallpaperFileHelper.IsImage(file))
                 throw new ArgumentException("Is not an image file.", nameof(file));
 
@@ -170,6 +168,9 @@ namespace WallpaperManager
 
         private WallpaperDataContainer ContructorHelper(FileInfo file, string typeName, string franchiseName, bool askBeforeCreation, int? index, DirectoryInfo originalLookUpDirectory, string[] possibleOriginalFileNames)
         {
+            if (!originalLookUpDirectory.Exists)
+                throw new DirectoryNotFoundException();
+
             //Find Type
             GetOrCreateType(typeName, askBeforeCreation, out var foundType);
 
@@ -283,6 +284,10 @@ namespace WallpaperManager
             }
         }
 
+        /// <summary>
+        /// Returns the (highest index + 1) of the current franchise.
+        /// </summary>
+        /// <returns></returns>
         private int GetNextIndex()
         {
             if (Franchise is null)
@@ -318,6 +323,7 @@ namespace WallpaperManager
         #endregion
 
         #region Public Methods
+
         public void SetIndexAndCorrectFiles(int newIndex)
         {
             Index = newIndex;

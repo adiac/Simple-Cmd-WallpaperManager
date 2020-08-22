@@ -7,6 +7,9 @@ namespace WallpaperManager
     {
         #region Main Methods
 
+        /// <summary>
+        /// Starts the main sequence of the user interface and stays in an loop until the program is aborted.
+        /// </summary>
         public static void Run()
         {
             Scan(true);
@@ -17,6 +20,9 @@ namespace WallpaperManager
             }
         }
 
+        /// <summary>
+        /// Displays the main menu with all features and prompts the user to choose one.
+        /// </summary>
         public static void MainMenu()
         {
             ClearAndPrintHeadline();
@@ -60,6 +66,10 @@ namespace WallpaperManager
 
         #region Main Menu Methods
 
+        /// <summary>
+        /// Scans or rescans all wallpapers and their originals. 
+        /// </summary>
+        /// <param name="firstScan">Indicates whether it is the first scan or not. This determines if exiting data is deleted before scanning or not.</param>
         public static void Scan(bool firstScan = false)
         {
             ClearAndPrintHeadline();
@@ -81,6 +91,9 @@ namespace WallpaperManager
             PressAnyKeyToContinue();
         }
 
+        /// <summary>
+        /// Prints some interesting statistics about all known wallpapers
+        /// </summary>
         public static void PrintWallpaperStats()
         {
             ClearAndPrintHeadline();
@@ -114,6 +127,9 @@ namespace WallpaperManager
             PressAnyKeyToContinue();
         }
 
+        /// <summary>
+        /// Copies all wallpapers into one folder. This is useful when another program (like windows backgrounds) need one folder.
+        /// </summary>
         public static void Merge()
         {
             ClearAndPrintHeadline();
@@ -123,6 +139,9 @@ namespace WallpaperManager
             PressAnyKeyToContinue();
         }
 
+        /// <summary>
+        /// Starts the sorting in process for new wallpapers located in the working directory.
+        /// </summary>
         private static void SortInNamedWorkingWallpapers()
         {
             ClearAndPrintHeadline();
@@ -136,6 +155,9 @@ namespace WallpaperManager
 
         }
 
+        /// <summary>
+        /// Finds and moves original wallpapers that have no edited version and therefor have no purpose.
+        /// </summary>
         private static void SortOutOrignals()
         {
             ClearAndPrintHeadline();
@@ -147,6 +169,9 @@ namespace WallpaperManager
             PressAnyKeyToContinue();
         }
 
+        /// <summary>
+        /// Goes through all index numbers, checks if they are in order without a number missing and fixes them when necessary.
+        /// </summary>
         private static void FixAllIndexes()
         {
             ClearAndPrintHeadline();
@@ -158,6 +183,9 @@ namespace WallpaperManager
 
         #region Helper Methods
 
+        /// <summary>
+        /// Clears the console and prints the name of the program along with its current version number as headline.
+        /// </summary>
         public static void ClearAndPrintHeadline()
         {
             Console.Clear();
@@ -167,6 +195,10 @@ namespace WallpaperManager
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Print a message and waits until the user presses any key.
+        /// </summary>
+        /// <param name="prompt"></param>
         public static void PressAnyKeyToContinue(string prompt = "Press any key to continue")
         {
             Console.Write("\n" + prompt);
@@ -185,6 +217,10 @@ namespace WallpaperManager
             }
         }
 
+        /// <summary>
+        /// Gets a user input to a question that can be answered with yes or no. Wrong inputs will be ignored.
+        /// </summary>
+        /// <returns></returns>
         public static bool GetUserInput()
         {
             Console.Write("\nPlease Type y/n: ");
@@ -206,6 +242,11 @@ namespace WallpaperManager
             }
         }
 
+        /// <summary>
+        /// Gets a user input to a question that can be answered with a number from 1 to 9. Wrong inputs will be ignored.
+        /// </summary>
+        /// <param name="amountOptions">Defines the range of options the user can enter.</param>
+        /// <returns></returns>
         public static int GetUserInput(int amountOptions)
         {
             bool isNumeric = false;
@@ -215,7 +256,7 @@ namespace WallpaperManager
             {
                 var inputThing = Console.ReadKey().KeyChar;
                 isNumeric = int.TryParse(inputThing.ToString(), out int choosenOption);
-                if (isNumeric && choosenOption <= amountOptions)
+                if (isNumeric && choosenOption <= amountOptions && choosenOption > 0)
                 {
                     return choosenOption;
                 }
