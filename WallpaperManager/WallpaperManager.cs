@@ -22,7 +22,7 @@ namespace WallpaperManager
         #endregion
 
         #region Directories
-        
+
         public static DirectoryInfo WallpaperDirectory { get; } = new DirectoryInfo("F:/Bilder/Wallpapers/Desktop");
         public static DirectoryInfo OriginalWallpaperDirectory { get; } = new DirectoryInfo("F:/Bilder/Wallpapers/Original");
         //Be careful! This next directory gets cleared without any warning!
@@ -144,10 +144,14 @@ namespace WallpaperManager
 
             Console.WriteLine($"Good: {goodIndexes}");
             Console.WriteLine($"Corrected: {correctedIndexes}");
-            Console.WriteLine("\nList of corrected wallpapers:");
-            foreach (var currentWallpaper in correctedWallpapers)
+
+            if (correctedIndexes > 0)
             {
-                Console.WriteLine(currentWallpaper);
+                Console.WriteLine("\nList of corrected wallpapers:");
+                foreach (var currentWallpaper in correctedWallpapers)
+                {
+                    Console.WriteLine(currentWallpaper);
+                }
             }
         }
 

@@ -50,7 +50,7 @@ namespace WallpaperManager
             //All parameters that have to be set.
             string typeName;
             string franchiseName;
-            bool askBeforeCreation;
+            bool ignoreMissing;
             int? index;
             DirectoryInfo originalLookUpDirectory;
             string[] possibleOriginalFileNames;
@@ -70,9 +70,9 @@ namespace WallpaperManager
                     var shortFileName1 = Path.GetFileNameWithoutExtension(file.Name);
                     var splitShortFileName1 = shortFileName1.Split('#'); //The '#' separates franchise and index.
                     franchiseName = splitShortFileName1[0];
-                    askBeforeCreation = false;
+                    ignoreMissing = true;
                     index = Convert.ToInt32(splitShortFileName1[1]);
-                    originalLookUpDirectory = WallpaperManager.OriginalWallpaperDirectory;
+                    originalLookUpDirectory = new DirectoryInfo(Path.Combine(WallpaperManager.OriginalWallpaperDirectory.FullName, typeName));
                     possibleOriginalFileNames = new[]
                     {
                         $"{franchiseName}#o{index}.png", //Test for png
@@ -86,7 +86,7 @@ namespace WallpaperManager
                     if (splitShortFileName2.Length > 2) //Check if something has gone wrong while splitting
                         throw new ArgumentException("Is not in the correct format.", nameof(file));
                     franchiseName = splitShortFileName2[0];
-                    askBeforeCreation = true;
+                    ignoreMissing = false;
                     index = null; //Set a new index, the current one is just temporary
                     originalLookUpDirectory = file.Directory;
 
@@ -117,7 +117,7 @@ namespace WallpaperManager
                 case WallpaperCreationMode.NewInSubFolder: // --------------------------------------------------------------------------------------------
                     typeName = file.Directory.Parent.Name;
                     franchiseName = file.Directory.Name;
-                    askBeforeCreation = true;
+                    ignoreMissing = false;
                     index = null;
                     originalLookUpDirectory = file.Directory;
                     var matchLength = Regex.Match(file.Name, WallpaperManager.EditedFilesRegexString).Value.Length;
@@ -134,7 +134,7 @@ namespace WallpaperManager
 
             try
             {
-                container = ContructorHelper(file, typeName, franchiseName, askBeforeCreation, index, originalLookUpDirectory, possibleOriginalFileNames);
+                container = ContructorHelper(file, typeName, franchiseName, ignoreMissing, index, originalLookUpDirectory, possibleOriginalFileNames);
             }
             catch (WallpaperBuildExeption e)
             {
@@ -166,23 +166,22 @@ namespace WallpaperManager
 
         #region C'Tor Helper
 
-        private WallpaperDataContainer ContructorHelper(FileInfo file, string typeName, string franchiseName, bool askBeforeCreation, int? index, DirectoryInfo originalLookUpDirectory, string[] possibleOriginalFileNames)
+        private WallpaperDataContainer ContructorHelper(FileInfo file, string typeName, string franchiseName, bool ignoreMissing, int? index, DirectoryInfo originalLookUpDirectory, string[] possibleOriginalFileNames)
         {
             if (!originalLookUpDirectory.Exists)
                 throw new DirectoryNotFoundException();
 
             //Find Type
-            GetOrCreateType(typeName, askBeforeCreation, out var foundType);
+            GetOrCreateType(typeName, ignoreMissing, out var finalType);
 
             //Find Franchise
-            GetOrCreateFranchise(franchiseName, foundType, askBeforeCreation, out var foundFranchise);
-            var finalFranchise = foundFranchise;
+            GetOrCreateFranchise(franchiseName, finalType, ignoreMissing, out var finalFranchise);
 
             //Find Index
             int finalIndex;
             if (index is null)
             {
-                finalIndex = GetNextIndex();
+                finalIndex = finalFranchise.GetNextIndex();
             }
             else
             {
@@ -190,9 +189,9 @@ namespace WallpaperManager
             }
 
             //Get the original file
-            if (!FindOriginal(possibleOriginalFileNames, originalLookUpDirectory, out var finalOriginalFile))
+            if (!FindOriginal(possibleOriginalFileNames, finalType, originalLookUpDirectory, out var finalOriginalFile) && !ignoreMissing)
             {
-                Console.Write($"Original file for {File.Name} not found. It seems there is none. Is this is intentional?");
+                Console.Write($"Original file for {file.Name} not found. It seems there is none. Is this is intentional?");
                 if (!UserInterface.GetUserInput())
                 {
                     Console.WriteLine();
@@ -210,9 +209,13 @@ namespace WallpaperManager
         /// <param name="typeName">The name of the franchise type to get or create</param>
         /// <param name="wallpaperFranchiseType">The found or created franchise type</param>
         /// <returns>If a new franchise type was created.</returns>
-        private void GetOrCreateType(string typeName, bool askBeforeCreation, out WallpaperType wallpaperFranchiseType)
+        private void GetOrCreateType(string typeName, bool ignoreMissing, out WallpaperType wallpaperFranchiseType)
         {
-            if (askBeforeCreation)
+            if (ignoreMissing)
+            {
+                wallpaperFranchiseType = WallpaperType.GetOrCreate(typeName);
+            }
+            else
             {
                 if (WallpaperType.TryGet(typeName, out WallpaperType? foundType)) //Check if type is unknown
                 {
@@ -233,10 +236,6 @@ namespace WallpaperManager
                     Console.WriteLine();
                 }
             }
-            else
-            {
-                wallpaperFranchiseType = WallpaperType.GetOrCreate(typeName);
-            }
         }
 
         /// <summary>
@@ -246,9 +245,13 @@ namespace WallpaperManager
         /// <param name="wallpaperFranchiseType">The type of the franchise.</param>
         /// <param name="wallpaperFranchise">The found or created franchise.</param>
         /// <returns>If new franchise was created.</returns>
-        private void GetOrCreateFranchise(string franchiseName, WallpaperType wallpaperFranchiseType, bool askBeforeCreation, out WallpaperFranchise wallpaperFranchise)
+        private void GetOrCreateFranchise(string franchiseName, WallpaperType wallpaperFranchiseType, bool ignoreMissing, out WallpaperFranchise wallpaperFranchise)
         {
-            if (askBeforeCreation)
+            if (ignoreMissing)
+            {
+                wallpaperFranchise = WallpaperFranchise.GetOrCreate(franchiseName, wallpaperFranchiseType);
+            }
+            else
             {
                 if (WallpaperFranchise.TryGet(franchiseName, out WallpaperFranchise? foundFranchise)) //Check if franchise is unknown
                 {
@@ -278,36 +281,9 @@ namespace WallpaperManager
                     Console.WriteLine();
                 }
             }
-            else
-            {
-                wallpaperFranchise = WallpaperFranchise.GetOrCreate(franchiseName, wallpaperFranchiseType);
-            }
         }
 
-        /// <summary>
-        /// Returns the (highest index + 1) of the current franchise.
-        /// </summary>
-        /// <returns></returns>
-        private int GetNextIndex()
-        {
-            if (Franchise is null)
-                throw new NullReferenceException("Franchise was not set, before searching for next index.");
-
-            var franchiseWallpapers = Franchise.GetAllWallpapers();
-
-            int highestIndex = 0;
-            foreach (var currentWallpaper in franchiseWallpapers)
-            {
-                if (currentWallpaper.Index > highestIndex)
-                {
-                    highestIndex = currentWallpaper.Index;
-                }
-            }
-
-            return highestIndex + 1;
-        }
-
-        private bool FindOriginal(string[] originalFileNames, DirectoryInfo lookUpDirectory, [NotNullWhen(true)] out FileInfo? originalFile)
+        private bool FindOriginal(string[] originalFileNames, WallpaperType type, DirectoryInfo lookUpDirectory, [NotNullWhen(true)] out FileInfo? originalFile)
         {
             //Find the first path that exits
             var foundFile = originalFileNames.FirstOrDefault(testFile => System.IO.File.Exists(Path.Combine(lookUpDirectory.FullName, testFile)));

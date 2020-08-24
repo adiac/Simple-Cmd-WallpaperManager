@@ -2,7 +2,7 @@
 {
     class Program
     {
-        public const string Version = "V2.0";
+        public const string Version = "V2.1";
 
         static void Main(string[] args)
         {

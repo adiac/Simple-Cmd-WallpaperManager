@@ -51,9 +51,25 @@ namespace WallpaperManager
             return false;
         }
 
-        public static List<Wallpaper> GetAllWallpapers(WallpaperFranchise franchise)
+        /// <summary>
+        /// Returns the (highest index + 1) of the current franchise instance.
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextIndex()
         {
-            return WallpaperManager.Wallpapers.FindAll(w => w.Franchise == franchise);
+
+            var franchiseWallpapers = GetAllWallpapers();
+
+            int highestIndex = 0;
+            foreach (var currentWallpaper in franchiseWallpapers)
+            {
+                if (currentWallpaper.Index > highestIndex)
+                {
+                    highestIndex = currentWallpaper.Index;
+                }
+            }
+
+            return highestIndex + 1;
         }
 
         public List<Wallpaper> GetAllWallpapers()

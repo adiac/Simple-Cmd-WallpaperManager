@@ -133,7 +133,9 @@ namespace WallpaperManager
         public static void Merge()
         {
             ClearAndPrintHeadline();
+            Console.WriteLine("Working...");
             var info = WallpaperManager.Merge();
+            ClearAndPrintHeadline();
             Console.WriteLine($"Deleted {info.Item1} Images");
             Console.WriteLine($"Copied {info.Item2} Images");
             PressAnyKeyToContinue();
@@ -146,7 +148,7 @@ namespace WallpaperManager
         {
             ClearAndPrintHeadline();
             var newWallpapers = WallpaperManager.SortInNamedWorkingWallpapers();
-            Console.WriteLine($"\nAdded and moved {newWallpapers.Count} wallpaper.");
+            Console.WriteLine($"Added and moved {newWallpapers.Count} wallpaper.\n");
             foreach (var currentWallpaper in newWallpapers)
             {
                 Console.WriteLine(currentWallpaper.ToString());
@@ -162,9 +164,16 @@ namespace WallpaperManager
         {
             ClearAndPrintHeadline();
             var movedFiles = WallpaperManager.SortOutOrignals();
-            foreach (var currentFile in movedFiles)
+            if (movedFiles.Count > 0)
             {
-                Console.WriteLine($"{currentFile.Directory.Name}/{currentFile.Name} was moved.");
+                foreach (var currentFile in movedFiles)
+                {
+                    Console.WriteLine($"{currentFile.Directory.Name}/{currentFile.Name} was moved.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No lonely original wallpaper found.");
             }
             PressAnyKeyToContinue();
         }
