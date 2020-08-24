@@ -1,5 +1,6 @@
 # Simple-Cmd-WallpaperManager
 Sorts and manages wallpapers along with original versions of them.
+Written in .NET Core, so should run on any supported platform.
 
 All path the program uses are currently hard coded. I may add a configuration file in the future.
 This is only a small project for personal use. If there is someone else interessted in using it, just write me.
