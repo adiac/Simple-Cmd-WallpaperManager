@@ -12,7 +12,7 @@ Each wallpaper has
 
 This aplication can:
 * Show wallpaper stats
-* Merge wallpapers
+* Merge all wallpapers into a single folder.
 * Sort in new wallpapers
 * Sort out original files without a wallpaper file.
 * Fix all wallpaper indexes
