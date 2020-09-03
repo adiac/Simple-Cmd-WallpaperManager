@@ -6,7 +6,7 @@ All paths the program uses are currently hard coded. I may add a configuration f
 This is only a small project for personal use. If there is someone else interessted in using it, just write me.
 
 Each wallpaper has
-* A unique franchise it belongs to. (E.g. 
+* A unique franchise it belongs to. (E.g. Pokémon, Sword Art Online, Factorio, etc)
 * An consecutive index that is unique within the same franchise.
 * Each franchise belongs to a unique type. (E.g. Anime, Artists, Games, etc)
 
