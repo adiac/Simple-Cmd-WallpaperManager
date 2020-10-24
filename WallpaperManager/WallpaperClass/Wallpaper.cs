@@ -268,7 +268,7 @@ namespace WallpaperManager
                 }
                 else
                 {
-                    Console.Write($"The wallpaper franchise with the name '{franchiseName}' does not exist. Do you want to create it?");
+                    Console.Write($"The wallpaper franchise with the name '{franchiseName}' does not exist. It would belong to the type '{wallpaperFranchiseType.Name}'.\nDo you want to create it?");
                     if (UserInterface.GetUserInput())
                     {
                         wallpaperFranchise = new WallpaperFranchise(franchiseName, wallpaperFranchiseType);

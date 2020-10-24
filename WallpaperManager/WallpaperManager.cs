@@ -155,6 +155,19 @@ namespace WallpaperManager
             }
         }
 
+        internal static void CleanWorkingDirectory()
+        {
+            var topLevelDir = WorkingDirectoryNamed;
+
+            foreach (var secondLevelDir in topLevelDir.GetDirectories())
+            {
+                foreach (var thirdLevelDir in secondLevelDir.GetDirectories())
+                {
+                    thirdLevelDir.Delete();
+                }
+            }
+        }
+
         public static void FullScan()
         {
             var allFiles = WallpaperDirectory.GetFiles("*", SearchOption.AllDirectories);

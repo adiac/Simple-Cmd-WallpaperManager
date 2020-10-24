@@ -149,6 +149,8 @@ namespace WallpaperManager
             ClearAndPrintHeadline();
             var newWallpapers = WallpaperManager.SortInNamedWorkingWallpapers();
             Console.WriteLine($"Added and moved {newWallpapers.Count} wallpaper.\n");
+            WallpaperManager.CleanWorkingDirectory();
+            Console.WriteLine("Cleaned sorting directory.");
             foreach (var currentWallpaper in newWallpapers)
             {
                 Console.WriteLine(currentWallpaper.ToString());
