@@ -284,8 +284,6 @@ namespace WallpaperManager
                     Console.Write(" ");
                     Console.CursorLeft--;
                 }
-
-                var i = 3;
             }
         }
 

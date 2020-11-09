@@ -271,6 +271,8 @@ namespace WallpaperManager
                     if (UserInterface.GetUserInput())
                     {
                         wallpaperFranchise = new WallpaperFranchise(franchiseName, wallpaperFranchiseType);
+                        WallpaperManager.Franchises.Add(wallpaperFranchise); //Add this instances franchise to the list of all franchises. 
+                        //This step is necessary, as we are creating it here outside of the class.
                     }
                     else
                     {
