@@ -196,38 +196,72 @@ namespace WallpaperManager
             int countDeleted = 0;
             int countCopied = 0;
 
-            //Delete all old files
-            foreach (var currentFile in MergedWallpaperDirectory.GetFiles())
+            if (false) //Environment.OSVersion.Platform == PlatformID.Win32NT
             {
-                if (WallpaperFileHelper.IsImage(currentFile))
-                {
-                    currentFile.Delete();
-                    countDeleted++;
-                }
-            }
-
-            //Get excluded types
-            WallpaperType excludedType;
-            if (WallpaperType.TryGet("X-MAS", out WallpaperType? type))
-            {
-                excludedType = type;
+                throw new NotImplementedException();
+                //Implement faster method of coping files here
             }
             else
             {
-                throw new ArgumentNullException("Franchise not found.", nameof(excludedType));
-            }
-
-            //Copy all wallpapers that are not excluded
-            foreach (var currentWallpaper in Wallpapers)
-            {
-                if (currentWallpaper.Franchise.Type != excludedType)
+                //Delete all old files
+                foreach (var currentFile in MergedWallpaperDirectory.GetFiles())
                 {
-                    currentWallpaper.File.CopyTo(Path.Combine(MergedWallpaperDirectory.FullName, currentWallpaper.File.Name));
-                    countCopied++;
+                    if (WallpaperFileHelper.IsImage(currentFile))
+                    {
+                        currentFile.Delete();
+                        countDeleted++;
+                    }
+                }
+
+                //Get excluded types
+                WallpaperType excludedType;
+                if (WallpaperType.TryGet("X-MAS", out WallpaperType? type))
+                {
+                    excludedType = type;
+                }
+                else
+                {
+                    throw new ArgumentNullException("Franchise not found.", nameof(excludedType));
+                }
+
+                //Copy all wallpapers that are not excluded
+                foreach (var currentWallpaper in Wallpapers)
+                {
+                    if (currentWallpaper.Franchise.Type != excludedType)
+                    {
+                        currentWallpaper.File.CopyTo(Path.Combine(MergedWallpaperDirectory.FullName, currentWallpaper.File.Name));
+                        countCopied++;
+                    }
                 }
             }
 
             return new Tuple<int, int>(countDeleted, countCopied);
+        }
+
+        //TODO: Use this method in the merge command to copy files with batch commands (which should be a lot faster)
+        //Command is
+        static void ExecuteCommand(string command)
+        {
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+                Console.WriteLine("output>>" + e.Data);
+            process.BeginOutputReadLine();
+
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+                Console.WriteLine("error>>" + e.Data);
+            process.BeginErrorReadLine();
+
+            process.WaitForExit();
+
+            Console.WriteLine("ExitCode: {0}", process.ExitCode);
+            process.Close();
         }
 
         public static int CleanUpOriginalWallpaper()
