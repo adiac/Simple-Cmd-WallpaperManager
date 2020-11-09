@@ -253,7 +253,7 @@ namespace WallpaperManager
             }
             else
             {
-                if (WallpaperFranchise.TryGet(franchiseName, out WallpaperFranchise? foundFranchise)) //Check if franchise is unknown
+                if (WallpaperFranchise.TryGet(franchiseName, out WallpaperFranchise? foundFranchise)) //Check if franchise already exists
                 {
                     if (foundFranchise.Type == wallpaperFranchiseType)
                     {
@@ -264,7 +264,6 @@ namespace WallpaperManager
                     {
                         throw new WallpaperBuildExeption($"Given and found {nameof(WallpaperType)} do not match");
                     }
-
                 }
                 else
                 {

@@ -262,18 +262,30 @@ namespace WallpaperManager
         {
             bool isNumeric = false;
             Console.Write("\nPlease enter a number from above: ");
+            int previousCursorPosition = Console.CursorLeft;
 
             while (true)
             {
                 var inputThing = Console.ReadKey().KeyChar;
                 isNumeric = int.TryParse(inputThing.ToString(), out int choosenOption);
+
                 if (isNumeric && choosenOption <= amountOptions && choosenOption > 0)
                 {
                     return choosenOption;
                 }
-                Console.CursorLeft--;
-                Console.Write(" ");
-                Console.CursorLeft--;
+
+                if (inputThing == '\r') //Enter has been pressed
+                {
+                    Console.CursorLeft = previousCursorPosition;
+                }
+                else
+                {
+                    Console.CursorLeft--;
+                    Console.Write(" ");
+                    Console.CursorLeft--;
+                }
+
+                var i = 3;
             }
         }
 
