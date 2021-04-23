@@ -163,7 +163,20 @@ namespace WallpaperManager
             {
                 foreach (var thirdLevelDir in secondLevelDir.GetDirectories())
                 {
-                    thirdLevelDir.Delete();
+                    var thridLevelDirFiles = thirdLevelDir.GetFiles();
+                    if (thridLevelDirFiles.Length == 0)
+                    {
+                        thirdLevelDir.Delete();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Found stray files that could not be handled:");
+                        foreach (var file in thridLevelDirFiles)
+                        {
+                            Console.WriteLine($"{topLevelDir.Name}\\{secondLevelDir.Name}\\{thirdLevelDir.Name}\\{file.Name}");
+                        }
+                        Console.WriteLine("Please manually handle the above listed. They will not be touched.\n");
+                    }
                 }
             }
         }
